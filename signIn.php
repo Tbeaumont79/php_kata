@@ -3,15 +3,33 @@
     require("db_configure.php");
 
 
-    if(isset($_POST['username']) && isset($_POST['password'])) {
-        $username = $_POST['name'];
-        $password = $_POST['password'];
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        $name = $_POST["name"];
+        $password = $_POST["password"];
 
-        $sql = "SELECT * FROM users WHERE name = :username AND password = :password";
-        $stmt = $pdo->prepare($sql);
-        $stmt->bindParam(':username', $username);
-        $stmt->bindParam(':password', $password);
-        $stmt->execute();
+        try {
+            if(isset($_POST['username']) && isset($_POST['password'])) {
+                $username = $_POST['name'];
+                $password = $_POST['password'];
+        
+                $sql = "SELECT * FROM users WHERE name = :username AND password = :password";
+                $stmt = $pdo->prepare($sql);
+                $stmt->bindParam(':username', $username);
+                $stmt->bindParam(':password', $password);
+                $stmt->execute();
+
+                if($stmt->rowCount() > 0) {
+                    $_SESSION['username'] = $username;
+                    header("Location: index.php");
+                }
+                else {
+                    echo "Wrong username or password";
+                }
+            }
+        }
+        catch(PDOException $error) {
+            echo "Connection failed: " . $error->getMessage();
+        }
     }
 ?>
 <!DOCTYPE html>
@@ -25,7 +43,6 @@
         <h1>Php kata</h1>
         <form action="index.php" method="post">
             <input type="text" name="name" placeholder="name">
-            <input type="text" name="email" placeholder="email">
             <input type="password" name="password" placeholder="password">
             <input type="submit" value="Submit">
         </form>
