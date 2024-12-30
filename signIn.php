@@ -1,25 +1,27 @@
 <?php
-    session_start();
     require("db_configure.php");
-
 
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $name = $_POST["name"];
         $password = $_POST["password"];
-
+ 
         try {
-            if(isset($_POST['username']) && isset($_POST['password'])) {
-                $username = $_POST['name'];
-                $password = $_POST['password'];
-        
-                $sql = "SELECT * FROM users WHERE name = :username AND password = :password";
+            if(isset($_POST['name']) && isset($_POST['password'])) {
+                $username = trim($_POST['name']);
+                $password = trim($_POST['password']);
+                $sql = "SELECT * FROM users WHERE username = :username";
                 $stmt = $pdo->prepare($sql);
                 $stmt->bindParam(':username', $username);
-                $stmt->bindParam(':password', $password);
                 $stmt->execute();
-
-                if($stmt->rowCount() > 0) {
-                    $_SESSION['username'] = $username;
+                $user = $stmt->fetch(PDO::FETCH_ASSOC);
+                echo $user['password'];
+                echo $user['username'];
+                if (password_verify($password, $user['password'])) {
+                    echo "password is valid ";                    
+                }
+                if($user['password'] && password_verify($password, $user['password'])) {
+                    session_start();
+                    $_SESSION['user_id'] = $user['id'];
                     header("Location: index.php");
                 }
                 else {
@@ -41,7 +43,7 @@
     </head>
     <body>
         <h1>Php kata</h1>
-        <form action="index.php" method="post">
+        <form action="signIn.php" method="post">
             <input type="text" name="name" placeholder="name">
             <input type="password" name="password" placeholder="password">
             <input type="submit" value="Submit">
