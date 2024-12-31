@@ -14,10 +14,9 @@
                 $stmt->bindParam(':username', $username);
                 $stmt->execute();
                 $user = $stmt->fetch(PDO::FETCH_ASSOC);
-                echo $user['password'];
                 echo $user['username'];
-                if (password_verify($password, $user['password'])) {
-                    echo "password is valid ";                    
+                if (!password_verify($password, $user['password'])) {
+                    echo "cannot verify password";
                 }
                 if($user['password'] && password_verify($password, $user['password'])) {
                     session_start();
@@ -48,5 +47,6 @@
             <input type="password" name="password" placeholder="password">
             <input type="submit" value="Submit">
         </form>
+        <a href="signup.php">Don't have an account ? Sign up</a>
     </body>
 </html>
