@@ -15,5 +15,6 @@
     <body>
         <h1>Php kata</h1>
         <p>This is the HomePage</p>
+        <a href="signOut.php">Sign out</a>
     </body>
 </html>
